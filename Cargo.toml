@@ -1,0 +1,15 @@
+[package]
+name = "helloworld"
+version = "0.1.0"
+edition = "2021"
+authors = ["Andres Almiray <aalmiray@yahoo.com>"]
+description = """
+HelloWorld in Rust
+"""
+documentation = "https://github.com/almiray/helloworld-rust"
+homepage = "https://github.com/almiray/helloworld-rust"
+repository = "https://github.com/aalmiray/helloworld-rust"
+keywords = ["helloworld"]
+categories = ["command-line-utilities"]
+license = "MIT"
+autotests = false
