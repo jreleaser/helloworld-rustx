@@ -1,0 +1,59 @@
+project:
+  name: helloworld
+  description: HelloWorld in Rust
+  longDescription: HelloWorld in Rust
+  website: https://github.com/aalmiray/helloworld-rust
+  authors:
+    - Andres Almiray
+  license: MIT
+  extraProperties:
+    inceptionYear: 2021
+
+release:
+  github:
+    name: helloworld-rust
+    overwrite: true
+    sign: true
+    discussionCategoryName: Announcements
+    changelog:
+      formatted: ALWAYS
+      format: '- {{commitShortHash}} {{commitTitle}}'
+      contributors:
+        format: '- {{contributorName}}{{#contributorUsernameAsLink}} ({{.}}){{/contributorUsernameAsLink}}'
+      labelers:
+        - label: 'feature'
+          title: 'feat:'
+        - label: 'issue'
+          title: 'fix:'
+        - label: 'task'
+          title: 'chore:'
+        - label: 'build'
+          title: 'build:'
+      categories:
+        - title: '🚀 Features'
+          labels:
+            - 'feature'
+        - title: '✅ Issues'
+          labels:
+            - 'issue'
+        - title: '🧰 Tasks'
+          labels:
+            - 'task'
+        - title: '🛠 Build'
+          labels:
+            - 'build'
+      replacers:
+        - search: 'feat: '
+        - search: 'fix: '
+        - search: 'chore: '
+        - search: 'build: '
+
+signing:
+  active: always
+  armored: true
+
+distributions:
+  helloworld:
+    type: BINARY
+    artifacts:
+      - path: target/distributions/{{distributionName}}-{{projectVersion}}-x86_64-apple-darwin.tar.gz
