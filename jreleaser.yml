@@ -23,17 +23,12 @@ release:
   github:
     name: helloworld-rust
     overwrite: true
-    sign: true
     changelog:
       formatted: ALWAYS
       format: '- {{commitShortHash}} {{commitTitle}}'
       preset: conventional-commits
       contributors:
         format: '- {{contributorName}}{{#contributorUsernameAsLink}} ({{.}}){{/contributorUsernameAsLink}}'
-
-signing:
-  active: always
-  armored: true
 
 assemble:
   archive:
