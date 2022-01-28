@@ -64,10 +64,10 @@ jobs:
       - name: Upload artifacts
         uses: actions/upload-artifact@v2
         with:
+          retention-days: 1
           name: artifacts
           path: |
             out/jreleaser/assemble/helloworld/archive/*.zip
-            out/jreleaser/assemble/helloworld/archive/*.tar.gz
 
       - name: JReleaser output
         if: always()
@@ -78,9 +78,59 @@ jobs:
           path: |
             out/jreleaser/trace.log
             out/jreleaser/output.properties
-                                          
-  release:
+
+  universal:
+    name: 'Build all-apple-darwin'
     needs: [ precheck, build ]
+    runs-on: macos-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+
+      - name: Download artifacts
+        uses: actions/download-artifact@v2
+
+      - name: Build binary
+        shell: bash
+        run: |
+          mkdir -p target/all-apple-darwin/release
+          cd artifacts
+          unzip -q helloworld-${{ needs.precheck.outputs.VERSION }}-x86_64-apple-darwin.zip
+          unzip -q helloworld-${{ needs.precheck.outputs.VERSION }}-aarch64-apple-darwin.zip
+          lipo -create helloworld-${{ needs.precheck.outputs.VERSION }}-x86_64-apple-darwin/bin/helloworld \
+            helloworld-${{ needs.precheck.outputs.VERSION }}-aarch64-apple-darwin/bin/helloworld \
+            -output ../target/all-apple-darwin/release/helloworld
+
+      - name: Assemble
+        uses: jreleaser/release-action@v2
+        with:
+          version: early-access
+          arguments: assemble
+        env:
+          JRELEASER_PROJECT_VERSION: ${{ needs.precheck.outputs.VERSION }}
+          JRELEASER_GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          JRELEASER_PLATFORM_OVERRIDE: osx
+
+      - name: Upload artifacts
+        uses: actions/upload-artifact@v2
+        with:
+          retention-days: 1
+          name: artifacts
+          path: |
+            out/jreleaser/assemble/helloworld/archive/*.zip
+
+      - name: JReleaser output
+        if: always()
+        uses: actions/upload-artifact@v2
+        with:
+          retention-days: 1
+          name: jreleaser-all-apple-darwin
+          path: |
+            out/jreleaser/trace.log
+            out/jreleaser/output.properties
+
+  release:
+    needs: [ precheck, universal ]
     if: endsWith(${{ needs.precheck.outputs.VERSION }}, '-SNAPSHOT')
     runs-on: ubuntu-latest
     
