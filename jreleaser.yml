@@ -6,12 +6,13 @@ project:
   name: helloworld
   description: HelloWorld in Rust
   longDescription: HelloWorld in Rust
-  website: https://github.com/aalmiray/helloworld-rustx
+  links:
+    homepage: https://github.com/jreleaser/helloworld-rustx
   authors:
     - Andres Almiray
   license: MIT
-  extraProperties:
-    inceptionYear: 2021
+  inceptionYear: 2021
+  stereotype: cli
 
 platform:
   replacements:
@@ -28,7 +29,6 @@ release:
     overwrite: true
     changelog:
       formatted: ALWAYS
-      format: '- {{commitShortHash}} {{commitTitle}}'
       preset: conventional-commits
       contributors:
         format: '- {{contributorName}}{{#contributorUsernameAsLink}} ({{.}}){{/contributorUsernameAsLink}}'

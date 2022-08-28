@@ -1,24 +1,32 @@
-name: EarlyAccess
+name: Release
 
 on:
-  push:
-    branches: [ main ]
+  workflow_dispatch:
+    inputs:
+      version:
+        description: 'Release version'
+        required: true
 
 jobs:
   precheck:
+    name: Precheck
     runs-on: ubuntu-latest
     outputs:
       VERSION: ${{ steps.vars.outputs.VERSION }}
     steps:
       - name: Checkout
         uses: actions/checkout@v3
-    
+
+      - name: Cancel previous run
+        uses: styfle/cancel-workflow-action@0.11.0
+        with:
+          access_token: ${{ secrets.GITHUB_TOKEN }}
+
       - name: Version
         id: vars
         shell: bash
         run: |
-          VERSION=$(sed -n 's/^version = "\(.*\)"/\1/p' Cargo.toml | head -n1)
-          echo "VERSION=$VERSION" >> $GITHUB_OUTPUT
+          echo "VERSION=${{ github.event.inputs.version }}" >> $GITHUB_OUTPUT
 
   build:
     needs: [ precheck ]
@@ -35,10 +43,9 @@ jobs:
       version: ${{ needs.precheck.outputs.VERSION }}
 
   release:
-    needs: [ precheck, universal ]
-    if: endsWith(${{ needs.precheck.outputs.VERSION }}, '-SNAPSHOT')
+    name: Release
+    needs: [ precheck, build, universal ]
     runs-on: ubuntu-latest
-    
     steps:
       - name: Checkout
         uses: actions/checkout@v3
@@ -47,6 +54,15 @@ jobs:
 
       - name: Download artifacts
         uses: actions/download-artifact@v3
+
+      - name: Commit version
+        run: |
+          echo ${{ needs.precheck.outputs.VERSION }} > VERSION
+          git add VERSION
+          git config --global user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git config --global user.name "GitHub Action"
+          git commit -a -m "Releasing version ${{ needs.precheck.outputs.VERSION }}"
+          git push origin main
 
       - name: Release
         uses: jreleaser/release-action@v2
@@ -60,7 +76,6 @@ jobs:
         if: always()
         uses: actions/upload-artifact@v3
         with:
-          retention-days: 1
           name: jreleaser-release
           path: |
             out/jreleaser/trace.log
