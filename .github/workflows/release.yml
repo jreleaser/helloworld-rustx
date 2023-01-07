@@ -30,14 +30,12 @@ jobs:
 
   build:
     needs: [ precheck ]
-    if: endsWith(${{ needs.precheck.outputs.VERSION }}, '-SNAPSHOT')
     uses: jreleaser/helloworld-rustx/.github/workflows/reusable-build.yml@main
     with:
       version: ${{ needs.precheck.outputs.VERSION }}
 
   universal:
     needs: [ precheck, build ]
-    if: endsWith(${{ needs.precheck.outputs.VERSION }}, '-SNAPSHOT')
     uses: jreleaser/helloworld-rustx/.github/workflows/reusable-build-universal.yml@main
     with:
       version: ${{ needs.precheck.outputs.VERSION }}
@@ -57,8 +55,8 @@ jobs:
 
       - name: Commit version
         run: |
-          echo ${{ needs.precheck.outputs.VERSION }} > VERSION
-          git add VERSION
+          sed -i -e "s/^version = "\(.*\)"/version = "${{ github.event.inputs.version }}/g" Cargo.toml
+          git add Cargo.toml
           git config --global user.email "41898282+github-actions[bot]@users.noreply.github.com"
           git config --global user.name "GitHub Action"
           git commit -a -m "Releasing version ${{ needs.precheck.outputs.VERSION }}"
