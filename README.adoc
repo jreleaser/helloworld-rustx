@@ -2,7 +2,7 @@
 
 This repository shows how to configure link:https://github.com/features/actions[GitHub Actions] and link:https://jreleaser.org/[JReleaser] to:
 
- * compile a helloworld app for the followign targets:
+ * compile a helloworld app for the following targets:
    ** aarch64-apple-darwin
    ** x86_64-apple-darwin
    ** x86_64-pc-windows-msvc
