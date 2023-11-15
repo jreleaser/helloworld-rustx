@@ -1,5 +1,13 @@
 = Helloworld in Rust
 
+ifdef::env-github[]
+:tip-caption: :bulb:
+:note-caption: :information_source:
+:important-caption: :heavy_exclamation_mark:
+:caution-caption: :fire:
+:warning-caption: :warning:
+endif::[]
+
 This repository shows how to configure link:https://github.com/features/actions[GitHub Actions] and link:https://jreleaser.org/[JReleaser] to:
 
  * compile a helloworld app for the followign targets:
@@ -16,3 +24,6 @@ Original code based on link:https://andresalmiray.com/releasing-rust-binaries-wi
 
 Cross compilation and universal setup based on link:https://github.com/manojkarthick/jreleaser-poc[] by 
 link:https://github.com/manojkarthick[@manojkarthick].
+
+IMPORTANT: JReleaser requires 2 additional inputs that may be set as environment variables, `JRELEASER_PROJECT_VERSION` and `JRELEASER_GITHUB_TOKEN`. 
+More information about environment variable configuration may be found in the link:https://jreleaser.org/guide/latest/reference/environment.html[guide].
