@@ -22,7 +22,7 @@ jobs:
     runs-on: ${{ matrix.job.os }}
     steps:
       - name: Checkout
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
 
       - name: Version
         shell: bash
@@ -52,20 +52,19 @@ jobs:
           JRELEASER_GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           JRELEASER_PLATFORM_OVERRIDE: ${{ matrix.job.jreleaser_platform }}
 
-      - name: Upload artifacts
-        uses: actions/upload-artifact@v3
-        with:
-          retention-days: 1
-          name: artifacts
-          path: |
-            out/jreleaser/assemble/helloworld/archive/*.zip
-
       - name: JReleaser output
         if: always()
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
-          retention-days: 1
-          name: jreleaser-${{ matrix.job.target }}
+          name: jreleaser-assemble-${{ matrix.job.target }}
           path: |
             out/jreleaser/trace.log
             out/jreleaser/output.properties
+
+      - name: Upload artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          retention-days: 1
+          name: artifact-${{ matrix.job.target }}
+          path: |
+            out/jreleaser/assemble/helloworld/archive/*.zip
