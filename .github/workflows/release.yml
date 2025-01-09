@@ -34,15 +34,9 @@ jobs:
     with:
       version: ${{ needs.precheck.outputs.VERSION }}
 
-  universal:
-    needs: [ precheck, build ]
-    uses: jreleaser/helloworld-rustx/.github/workflows/reusable-build-universal.yml@main
-    with:
-      version: ${{ needs.precheck.outputs.VERSION }}
-
   release:
     name: Release
-    needs: [ precheck, build, universal ]
+    needs: [ precheck, build ]
     runs-on: ubuntu-latest
     steps:
       - name: Checkout

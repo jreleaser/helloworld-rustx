@@ -9,17 +9,8 @@ on:
 
 jobs:
   build:
-    name: 'Build ${{ matrix.job.target }}'
-    strategy:
-      fail-fast: true
-      matrix:
-        job:
-          - { target: aarch64-apple-darwin     , os: macos-latest  ,                  jreleaser_platform: osx-aarch_64   }
-          - { target: x86_64-apple-darwin      , os: macos-latest  ,                  jreleaser_platform: osx-x86_64     }
-          - { target: x86_64-pc-windows-msvc   , os: windows-latest,                  jreleaser_platform: windows-x86_64 }
-          - { target: x86_64-unknown-linux-gnu , os: ubuntu-latest ,                  jreleaser_platform: linux-x86_64   }
-          - { target: aarch64-unknown-linux-gnu, os: ubuntu-latest , use-cross: true, jreleaser_platform: linux-aarch_64 }
-    runs-on: ${{ matrix.job.os }}
+    name: Build
+    runs-on: [ubuntu-latest]
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -29,19 +20,19 @@ jobs:
         run: |
           sed -i -e 's/^version = "\(.*\)"/version = "${{ inputs.version }}"/g' Cargo.toml
 
-      - name: Install Rust toolchain
+      - name: Setup Zig
+        uses: mlugg/setup-zig@v1
+
+      - name: Setup Rust
         uses: actions-rs/toolchain@v1
         with:
           toolchain: stable
-          target: ${{ matrix.job.target }}
-          override: true
-          profile: minimal
-          
-      - uses: actions-rs/cargo@v1
+     
+      - name: Setup zigbuild
+        uses: actions-rs/cargo@v1
         with:
-          use-cross: ${{ matrix.job.use-cross }}
-          command: build
-          args: --release --target=${{ matrix.job.target }}
+          command: install
+          args: --locked cargo-zigbuild
           
       - name: Assemble
         uses: jreleaser/release-action@v2

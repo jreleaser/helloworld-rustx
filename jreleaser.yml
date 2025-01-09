@@ -1,46 +1,57 @@
-environment:
-  properties:
-    artifactsDir: out/jreleaser/assemble/helloworld/archive
+matrix:
+  rows:
+    - { target: aarch64-apple-darwin,      platform: osx-aarch_64   }
+    - { target: x86_64-apple-darwin,       platform: osx-x86_64     }
+    - { target: aarch64-unknown-linux-gnu, platform: linux-aarch_64 }
+    - { target: x86_64-unknown-linux-gnu,  platform: linux-x86_64   }
+    - { target: x86_64-pc-windows-gnu,     platform: windows-x86_64 }
+
+hooks:
+  script:
+    before:
+      - run: |
+          cargo install --locked cargo-zigbuild
+        verbose: true
+        filter:
+          includes: ['assemble']
+      - run: |
+          rustup target add {{ matrix.target }}
+          cargo zigbuild --target {{ matrix.target }}
+        applyDefaultMatrix: true
+        verbose: true
+        filter:
+          includes: ['assemble']
 
 project:
   name: helloworld
   description: HelloWorld in Rust
   longDescription: HelloWorld in Rust
   links:
-    homepage: https://github.com/jreleaser/helloworld-rustx
+    homepage: https://github.com/aalmiray/helloworld-rustzig-slsa
   authors:
     - Andres Almiray
-  license: MIT
+  license: Apache-2.0
   inceptionYear: 2021
   stereotype: CLI
-
-platform:
-  replacements:
-    'osx-x86_64': 'x86_64-apple-darwin'
-    'osx-aarch_64': 'aarch64-apple-darwin'
-    'osx': 'all-apple-darwin'
-    'linux-x86_64': 'x86_64-unknown-linux-gnu'
-    'linux-aarch_64': 'aarch64-unknown-linux-gnu'
-    'windows-x86_64': 'x86_64-pc-windows-msvc'
-
+    
 release:
   github:
-    name: helloworld-rustx
     overwrite: true
     changelog:
       formatted: ALWAYS
       preset: conventional-commits
       contributors:
         format: '- {{contributorName}}{{#contributorUsernameAsLink}} ({{.}}){{/contributorUsernameAsLink}}'
-
+        
 assemble:
   archive:
     helloworld:
       active: ALWAYS
       formats: [ ZIP ]
-      attachPlatform: true
+      applyDefaultMatrix: true
+      archiveName: '{{distributionName}}-{{projectVersion}}-{{ matrix.target }}'
       fileSets:
-        - input: 'target/{{ osPlatformReplaced }}/release'
+        - input: 'target/{{ matrix.target }}'
           output: 'bin'
           includes: [ 'helloworld{.exe,}' ]
         - input: '.'
@@ -48,19 +59,5 @@ assemble:
 
 distributions:
   helloworld:
-    type: BINARY
     executable:
       windowsExtension: exe
-    artifacts:
-      - path: '{{artifactsDir}}/{{distributionName}}-{{projectVersion}}-all-apple-darwin.zip'
-        platform: 'osx'
-      - path: '{{artifactsDir}}/{{distributionName}}-{{projectVersion}}-aarch64-apple-darwin.zip'
-        platform: 'osx-aarch_64'
-      - path: '{{artifactsDir}}/{{distributionName}}-{{projectVersion}}-x86_64-apple-darwin.zip'
-        platform: 'osx-x86_64'
-      - path: '{{artifactsDir}}/{{distributionName}}-{{projectVersion}}-x86_64-pc-windows-msvc.zip'
-        platform: 'windows-x86_64'
-      - path: '{{artifactsDir}}/{{distributionName}}-{{projectVersion}}-x86_64-unknown-linux-gnu.zip'
-        platform: 'linux-x86_64'
-      - path: '{{artifactsDir}}/{{distributionName}}-{{projectVersion}}-aarch64-unknown-linux-gnu.zip'
-        platform: 'linux-aarch_64'

@@ -33,15 +33,8 @@ jobs:
     with:
       version: ${{ needs.precheck.outputs.VERSION }}
 
-  universal:
-    needs: [ precheck, build ]
-    if: endsWith(${{ needs.precheck.outputs.VERSION }}, '-SNAPSHOT')
-    uses: jreleaser/helloworld-rustx/.github/workflows/reusable-build-universal.yml@main
-    with:
-      version: ${{ needs.precheck.outputs.VERSION }}
-
   release:
-    needs: [ precheck, universal ]
+    needs: [ precheck, build ]
     if: endsWith(${{ needs.precheck.outputs.VERSION }}, '-SNAPSHOT')
     runs-on: ubuntu-latest
     

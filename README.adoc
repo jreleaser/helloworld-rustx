@@ -15,15 +15,18 @@ This repository shows how to configure link:https://github.com/features/actions[
    ** x86_64-apple-darwin
    ** x86_64-pc-windows-msvc
    ** x86_64-unknown-linux-gnu
- * use cross to compile for aarch64-unknown-linux-gnu
- * use `lipo` to generate an universal binary for apple-darwin
+   ** aarch_64-unknown-linux-gnu
  * assemble zip distributions with JReleaser
  * create rolling early-acces releases with JReleaser on every push to `main` branch
 
-Original code based on link:https://andresalmiray.com/releasing-rust-binaries-with-jreleaser/[Releasing Rust Binaries with JReleaser].
+Requires installing [cargo-zigbuild](https://github.com/rust-cross/cargo-zigbuild).
 
-Cross compilation and universal setup based on link:https://github.com/manojkarthick/jreleaser-poc[] by 
-link:https://github.com/manojkarthick[@manojkarthick].
+### Commands
+
+```
+$ jreleaser assemble
+$ jreleaser release
+```
 
 IMPORTANT: JReleaser requires 2 additional inputs that may be set as environment variables, `JRELEASER_PROJECT_VERSION` and `JRELEASER_GITHUB_TOKEN`. 
 More information about environment variable configuration may be found in the link:https://jreleaser.org/guide/latest/reference/environment.html[guide].
